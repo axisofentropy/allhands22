@@ -321,7 +321,7 @@ jobs:
         uses: UffizziCloud/preview-action@latest
         with:
           compose-file: 'tmp/docker-compose.generated.yaml'
-          username: adam@idyl.tech
+          username: adam.vollrath@uffizzi.com
           server: https://devopseu.uffizzicloud.com
           project: default
           password: ${{ secrets.UFFIZZI_PASSWORD }}
@@ -394,7 +394,7 @@ jobs:
         with:
           preview-id: ${{ steps.comment.outputs.id }}
           compose-file: 'tmp/docker-compose.generated.yml'
-          username: adam@idyl.tech
+          username: adam.vollrath@uffizzi.com
           server: https://devopseu.uffizzicloud.com
           project: default
           password: ${{ secrets.UFFIZZI_PASSWORD }}
