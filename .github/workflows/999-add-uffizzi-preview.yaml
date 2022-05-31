@@ -393,7 +393,7 @@ jobs:
         if: ${{ steps.comment.outputs.id != null }}
         with:
           preview-id: ${{ steps.comment.outputs.id }}
-          compose-file: 'tmp/docker-compose.generated.yml'
+          compose-file: 'tmp/docker-compose.generated.yaml'
           username: adam.vollrath@uffizzi.com
           server: https://devopseu.uffizzicloud.com
           project: default
