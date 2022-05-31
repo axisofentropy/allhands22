@@ -1,5 +1,5 @@
 ---
-name: 999 Deploy Uffizzi Preview
+name: 999 Deploy or Update Uffizzi Preview
 
 on:
   push:
