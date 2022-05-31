@@ -295,6 +295,7 @@ jobs:
 
   deploy-uffizzi-preview:
     name: Deploy Uffizzi Preview
+    if: github.event_name == 'pull_request' && github.event.action == 'opened'
     runs-on: ubuntu-latest
     needs: [build-final-image]
     steps:
@@ -317,13 +318,12 @@ jobs:
           envsubst < docker-compose.uffizzi.yaml > tmp/docker-compose.generated.yaml
       - name: Deploy preview
         id: preview
-        # TODO: Update @ref soon.
-        uses: UffizziCloud/preview-action@outputs
+        uses: UffizziCloud/preview-action@latest
         with:
           compose-file: 'tmp/docker-compose.generated.yaml'
-          username: ${{ secrets.UFFIZZI_USERNAME }}
-          hostname: ${{ secrets.UFFIZZI_HOSTNAME }}
-          project: ${{ secrets.UFFIZZI_PROJECT }}
+          username: adam@idyl.tech
+          server: https://devopseu.uffizzicloud.com
+          project: default
           password: ${{ secrets.UFFIZZI_PASSWORD }}
       - name: Check outputs
         # TODO: Drop this step soon.
@@ -332,7 +332,9 @@ jobs:
         # If PR, put Preview URL and ID in the PR comments
         # from https://github.com/marketplace/actions/create-or-update-comment
       - name: Confirm Successful Preview Deployment
-        run: curl --fail --location ${{ steps.preview.outputs.url }}
+        uses: docker://curlimages/curl:7.82.0
+        with:
+          args: --retry 12 --retry-all-errors --retry-delay 0 --fail --location ${{ steps.preview.outputs.url }}
       - name: Find comment for deployment URL
         uses: peter-evans/find-comment@v1
         if: github.event_name == 'pull_request'
@@ -353,9 +355,6 @@ jobs:
             Uffizzi Preview deployed:
             ${{ steps.preview.outputs.url }}
 
-            Uffizzi Preview ID:
-            ```text
-            ${{ steps.preview.outputs.id }}
-            ```
+            Uffizzi Preview ID: `${{ steps.preview.outputs.id }}`
           edit-mode: replace
 #NEW: (END) ############################################################
