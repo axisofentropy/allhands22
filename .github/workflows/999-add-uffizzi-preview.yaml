@@ -357,4 +357,51 @@ jobs:
 
             Uffizzi Preview ID: `${{ steps.preview.outputs.id }}`
           edit-mode: replace
+
+  update-preview:
+    name: Update Uffizzi Preview
+    if: github.event_name == 'pull_request' && github.event.action == 'synchronize'
+    needs: [build-final-image]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout git repo
+        uses: actions/checkout@v3
+      - name: Render Compose File
+        run: |
+          # Cut all but the first image tag.
+          FINAL_IMAGE=$(echo ${{ needs.build-final-image.outputs.tags }} | cut -f1 -d',')
+          export FINAL_IMAGE
+          echo Final image: "$FINAL_IMAGE"
+          # Render simple template from environment variables.
+          mkdir tmp
+          envsubst < docker-compose.uffizzi.yaml > tmp/docker-compose.generated.yaml
+      - name: Find comment for deployment URL
+        uses: peter-evans/find-comment@v2
+        id: find-comment
+        with:
+          issue-number: ${{ github.event.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: Preview
+      - name: Output deployment ID
+        id: comment
+        run: 'echo ''${{ steps.find-comment.outputs.comment-body }}'' | sed -n "s/Uffizzi Preview ID: \`\(\S*\)\`/::set-output name=id::\1/p"'
+      - name: DEBUG - Echo deployment ID
+        run: 'echo ${{ steps.comment.outputs.id }}'
+      - name: Update Preview from Uffizzi
+        uses: UffizziCloud/update-preview-action@v1
+        id: preview
+        if: ${{ steps.comment.outputs.id != null }}
+        with:
+          preview-id: ${{ steps.comment.outputs.id }}
+          compose-file: 'tmp/docker-compose.generated.yml'
+          username: adam@idyl.tech
+          server: https://devopseu.uffizzicloud.com
+          project: default
+          password: ${{ secrets.UFFIZZI_PASSWORD }}
+      - name: Check outputs
+        run: echo "${{ steps.preview.outputs.id }} at ${{ steps.preview.outputs.url }}"
+      - name: Confirm Successful Preview Deployment
+        uses: docker://curlimages/curl:7.82.0
+        with:
+          args: --retry 12 --retry-all-errors --retry-delay 0 --fail --location ${{ steps.preview.outputs.url }}
 #NEW: (END) ############################################################
