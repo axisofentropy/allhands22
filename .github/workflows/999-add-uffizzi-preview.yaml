@@ -322,7 +322,7 @@ jobs:
         with:
           compose-file: 'tmp/docker-compose.generated.yaml'
           username: adam.vollrath@uffizzi.com
-          server: https://devopseu.uffizzicloud.com
+          server: https://devops-pro-europe-2022.uffizzicloud.com
           project: default
           password: ${{ secrets.UFFIZZI_PASSWORD }}
       - name: Check outputs
@@ -395,7 +395,7 @@ jobs:
           preview-id: ${{ steps.comment.outputs.id }}
           compose-file: 'tmp/docker-compose.generated.yaml'
           username: adam.vollrath@uffizzi.com
-          server: https://devopseu.uffizzicloud.com
+          server: https://devops-pro-europe-2022.uffizzicloud.com
           project: default
           password: ${{ secrets.UFFIZZI_PASSWORD }}
       - name: Check outputs

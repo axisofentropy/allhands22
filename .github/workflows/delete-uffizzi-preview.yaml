@@ -29,6 +29,6 @@ jobs:
         with:
           id: ${{ steps.preview.outputs.id }}
           username: adam.vollrath@uffizzi.com
-          server: https://devopseu.uffizzicloud.com
+          server: https://devops-pro-europe-2022.uffizzicloud.com
           project: default
           password: ${{ secrets.UFFIZZI_PASSWORD }}
